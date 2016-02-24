@@ -1,0 +1,914 @@
+% Package that contains Simon's customized commands and macros
+
+
+
+% This package can be loaded with one of two options, either 'color' or 'bw'.
+% This defines if the package consideres the document to be in color, or in black and white.
+% The search path for \incfig and \incdraw will be set according to the color.
+%
+% I.e. \usepackage[bw]{commands} will set black and white. Default value is 'color'.
+%
+% If using this functionality, make sure that all figures and drawings exists in both directories.
+% Note that you can yourself condition on this by \ifcolorelse{}{}
+
+
+
+
+% This package is quite diverse in what it does, it really is a collection of personalized functionalities.
+% Currently, the package is divided into 8 more or less separated parts, they are:
+%
+% - Conditional input of files - Used so that some files might not exist, but the document can be built anyway.
+% - Mathematical expressions   - Short forms for often used mathematical stuff.
+% - Commenting                 - Used to comment the document in various ways.
+% - Arrays                     - A simple, sufficient implementation of a sort of array structure.
+% - Abbreviations              - Handles creation, usage and listing of used abbreviations.
+% - Chapter/section labeling   - Fast and simple labeling of chapters, sections and subsections.
+% - Referencing                - Many forms of referencing different stuff in the document.
+% - Figure and drawing input   - Simplified input of figures and tex-drawings.
+
+
+
+
+% Following is a list of all public commands in this package.
+% Arguments inside {} are mandatory, and those inside [] are optional.
+% Note that most parts are more well-documented with comments at the start of their implementation.
+% Especially the abbreviations part is rigorously explained.
+
+% ********** Conditional input of files **********
+%
+% \inputif{filename} - inputs a file if it exists, otherwise marks the position in the document
+%
+%
+%
+% *********** Mathematical expressions ***********
+%
+% \argmin            - Math operator
+% \vec               - Format vector
+% \matr              - Format matrix
+% \Ex                - The expectation operator
+% \Va                - The variance operator
+% \Tcp               - Short for mathematical T_{cp} (cyclic prefix time) (use anywhere)
+% \Expec{arg}        - Formatted expectiation of 'arg' (use anywhere)
+% \Var{arg}          - Formatted variance of 'arg' (use anywhere)
+% \Abs{arg}          - Formatted absolute value of 'arg' (use anywhere)
+% \Norm{arg}         - Formatted norm of 'arg' (use anywhere)
+% \CNdist{mean}{var} - Formatted cyclic normal distribution (use anywhere)
+% \Compl             - Formatted complex field symbol (use anywhere)
+% \Inv{arg}          - Formatted raise 'arg' to -1 (use anywhere)
+%
+%
+%
+% ****************** Commenting ******************
+%
+% \com{Comment}[todonotesoption]       - Input a normal comment
+% \combad{Comment}[todonotesoption]    - Input an important comment
+% \begin{comm}{Comment} & \end{com}    - Environment to mark the text being commented
+% \begin{commbad}{Comment} & \end{com} - Environment to mark the text being importantly commented
+%
+%
+%
+% ******************** Arrays ********************
+%
+% \newownarray{name} - creates a new array (one indexed!) called name, which defines:
+%     \nameset{index}{data}   - Sets element nr index to data
+%     \nameget{index}         - Returns element nr index
+%     \nameswitch{ind1}{ind2} - Switches elements at ind1 and ind2
+%
+%
+%
+% ***************** Abbreviations ****************
+%
+% \textabbr{text}                           - Formats the 'text' as an abbreviation
+% \defabbr{text}                            - Formats the 'text' as the first use of an abbreviation definition
+% \formatabbrv{text}                        - Formats 'text' as \textabbr for upper case letters, 
+%                                             and as \small for everything else
+% \newabbrv{abbrv}{def}                     - Declares a formatted abbreviation 'abbrv', named 'abbrv', 
+%                                             with definition 'def'
+% \newabbrvspecial{abbrv}{def}{name}        - Declares a formatted abbreviation 'abbrv', named 'name', 
+%                                             with definition 'def'
+% \newabbrvexplicit{abbrv}{def}{name}{alph} - Declares an unformatted abbreviation, named 'name',
+%                                             with definition 'def' and sorted according to 'alph'
+%
+%      An abbreviation named 'name' provides the following:
+%         \name     - Inputs the abbreviation
+%         \namedef  - Inputs the exact definition 
+%         \namesdef - Inputs the definition in lower case
+%      The first usage of \namedef or \namesdef is input formatted with \defabbr
+%
+% \skipdeffirst{name} - Skip using \defabbr for first use of a definition of 'name'
+% \listabbrv          - List (alphabetical) all abbreviations and definitions in two columns
+% \listabbrvn{i}{j}   - List (alphabetical) abbreviations 'i' to 'j' (inclusive) with definitions, in two columns
+% \enableAbbrvCount        - Makes the lists contain statistics on usage count
+% \enableAbbrvCountVerbose - Makes the lists contain statistics on usage count and first usage position
+% \disableAbbrvCount       - Makes the lists not contain statistics (default)
+%
+%
+%
+% *********** Chapter/section labeling ***********
+%
+% \Chapter{name}[lab]    - Start new chapter with label set to cha:'lab' if given, otherwise cha:'name'
+% \Section{name}[lab]    - Start new section with label set to sec:'lab' if given, otherwise sec:'name'
+% \Subsection{name}[lab] - Same as previous but for subsection
+%
+%
+%
+% ****************** Referencing *****************
+%
+% \chapterref{lab} - Reference chapter with label cha:'lab' (use inside sentence)
+% \Chapterref{lab} - Reference chapter with label cha:'lab' (use at start of sentence)
+% \secitonref{lab} - Reference section with label sec:'lab' (use inside sentence)
+% \Sectionref{lab} - Reference section with label sec:'lab' (use at start of sentence)
+%
+% \secitonstoref{lab1}{lab2}          - Reference sections with label sec:'lab1' 
+%                                       to section with label sec:'lab2' (use inside sentence)
+% \Sectionstoref{lab1}{lab2}          - Reference sections with label sec:'lab1' 
+%                                       to section with label sec:'lab2' (use at start of sentence)
+% \secitonsreftwo{lab1}{lab2}         - Reference section with label sec:'lab1' 
+%                                       and section with label sec:'lab2' (use inside sentence)
+% \Sectionsreftwo{lab1}{lab2}         - Reference section with label sec:'lab1' 
+%                                       and section with label sec:'lab2' (use at start of sentence)
+% \secitonsrefthree{lab1}{lab2}{lab3} - Reference section with label sec:'lab1', section with label sec:'lab2' 
+%                                       and section with label sec:'lab3' (use inside sentence)
+% \Sectionsrefthree{lab1}{lab2}{lab3} - Reference section with label sec:'lab1', section with label sec:'lab2' 
+%                                       and section with label sec:'lab3' (use at start of sentence)
+%
+% \theoremref{lab}  - Reference theorem with label the:'lab' (use inside sentence)
+% \Theoremref{lab}  - Reference theorem with label the:'lab' (use at start of sentence)
+% \exampleref{lab}  - Reference example with label ex:'lab' (use inside sentence)
+% \Exampleref{lab}  - Reference example with label ex:'lab' (use at start of sentence)
+% \equationref{lab} - Reference equation with label eq:'lab' (use inside sentence)
+% \Equationref{lab} - Reference equation with label eq:'lab' (use at start of sentence)
+% \figureref{lab}   - Reference figure with label fig:'lab' (use inside sentence)
+% \Figureref{lab}   - Reference figure with label fig:'lab' (use at start of sentence)
+% \tableref{lab}    - Reference table with label tab:'lab' (use inside sentence)
+% \Tableref{lab}    - Reference table with label tab:'lab' (use at start of sentence)
+% \pagepageref{num} - Reference page number 'num'
+%
+%
+%
+% *********** Figure and drawing input ***********
+%
+% \ifcolorelse{arg1}{arg2} - Inputs 'arg1' if document is in color, otherwise inputs 'arg2'
+%
+% \incfig[filename = •, caption = •, label = •, options = {•}, position = •]  - Includes figure from directory fig/
+%                                                                               if color, and from figbw/ otherwise
+% \incdraw[filename = •, caption = •, label = •, options = {•}, position = •] - Includes tex-file as figure, from
+%                                                                               directory fig/ if color and from
+%                                                                               figbw/ otherwise
+
+
+
+
+
+
+%***********************************************************
+%                      Start of package                    *
+%***********************************************************
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simontex}[2016/02/24 simontex]
+
+\RequirePackage{comment}
+\RequirePackage{xspace}
+\RequirePackage{amsmath}
+\RequirePackage{todonotes}
+\RequirePackage{mdframed}
+\RequirePackage{pdftexcmds}
+\RequirePackage{pdftexcmds}
+\RequirePackage{multido}
+\RequirePackage{pgfkeys}
+\RequirePackage{hyperref}
+
+\makeatletter
+\newif\ifblack@ndwhite
+
+\DeclareOption{bw}{\black@ndwhitetrue}
+\DeclareOption{color}{\black@ndwhitefalse}
+\makeatother
+
+\ExecuteOptions{color}
+\ProcessOptions\relax
+
+
+
+
+
+
+
+
+
+%***********************************************************
+%                          Input if                        *
+%***********************************************************
+
+
+% Only inputs file if it exists, otherwise skips.
+% Useful to leave secret things secret, and only using Git for not secret files.
+
+
+\def\inputif#1{%
+\IfFileExists{./#1}{\input{./#1}}{\texttt{\textbf{\textcolor{red!70!black}{Missing file:}} \detokenize{#1}.tex}}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+%***********************************************************
+%                   Equation notations                     *
+%***********************************************************
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% Appearance of vectors and matrices, easy to change if wanted.
+\renewcommand\vec{\mathbf}
+\newcommand\matr{\mathbf}
+
+% Expected value and Variance operators
+\newcommand{\Ex}{\operatorname{\mathbb{E}}}
+\newcommand{\Va}{\operatorname{\mathbf{Var}}}
+
+% Commonly used notations
+\newcommand{\Tcp}{\ensuremath{T_\text{CP}}\xspace}
+\newcommand{\Expec}[1]{\ensuremath{\Ex\left\{ #1 \right\}}}
+\newcommand{\Var}[1]{\ensuremath{\Va\left\{ #1 \right\}}}
+\newcommand{\Abs}[1]{\ensuremath{\left| #1 \right|}}
+\newcommand{\Norm}[1]{\ensuremath{\left\| #1 \right\|}}
+\newcommand{\CNdist}[2]{\ensuremath{\sim \mathcal{CN}\left(#1,#2\right)}}
+\newcommand{\Compl}{\ensuremath{\mathbb{C}}\xspace}
+\newcommand{\Inv}[1]{\ensuremath{\left( #1 \right)^{-1}}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+%***********************************************************
+%                   Commenting and todo                    *
+%***********************************************************
+
+
+% The command \listoftodos will input a list of all your comments in the document!
+
+% Use \com for a simple comment, \combad the comment is regarding something serious.
+% If you want the comment in the text and not the margin, supply the option inline: \com[inline]{Comment...}
+
+\newcommand{\com}[2][]{\todo[linecolor=blue!25,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommand{\combad}[2][]{\todo[linecolor=red!25,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+
+
+% The environments comm and commbad can be used to highlight the section that the comment is about
+
+\newenvironment{comm}[1]
+{\todo[noline,backgroundcolor=blue!25,bordercolor=blue]{#1} \begin{mdframed}[innerleftmargin=1pt,innerrightmargin=1pt,leftmargin=-3pt,rightmargin=-3pt,hidealllines=true,skipabove=0pt, backgroundcolor=blue!10]}
+{\end{mdframed}}
+
+\newenvironment{commbad}[1]
+{\todo[noline,backgroundcolor=red!25,bordercolor=red]{#1} \begin{mdframed}[innerleftmargin=1pt,innerrightmargin=1pt,leftmargin=-3pt,rightmargin=-3pt,hidealllines=true,skipabove=0pt, backgroundcolor=red!10]}
+{\end{mdframed}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%***********************************************************
+%                   Array Implementation                   *
+%***********************************************************
+
+\makeatletter
+
+\def\newownarray#1{%
+\expandafter\newcount\csname #1@arcount\endcsname
+\expandafter\global\csname #1@arcount\endcsname 1\relax
+% Set one array-element
+\expandafter\def\csname #1set\endcsname##1##2{%
+\expandafter\def\csname #1@\romannumeral ##1\endcsname{##2}%
+}
+% Get one array-element
+\expandafter\def\csname #1get\endcsname##1{%
+\csname #1@\romannumeral ##1\endcsname%
+}
+% Creating one switch command, that switches two array entries
+% Using more temps than required, but it makes for easier reading
+\expandafter\def\csname #1switch\endcsname##1##2{%
+\expandafter\let\expandafter\tmpi\csname #1@\romannumeral ##1\endcsname
+\expandafter\let\expandafter\tmpii\csname #1@\romannumeral ##2\endcsname
+\global\expandafter\let\csname #1@\romannumeral ##1\endcsname\tmpii
+\global\expandafter\let\csname #1@\romannumeral ##2\endcsname\tmpi
+}
+}
+
+\makeatother
+
+
+
+
+
+
+
+
+
+
+
+%***********************************************************
+%                   Easy abbreviations                     *
+%***********************************************************
+
+% This part of the package makes it quite easy to handle abbreviations in your thesis.
+% Whenever you are about to use a new abbreviation, declare it with one of the following:
+
+% Guide for choosing abbreviation declaring command:
+%
+%  ------------------------                    
+% | Do you want a special  |        Yes       
+% | self-defined format?   |     --------------------.  
+%  ------------------------                          |
+%          |                                         |
+%          | No                                      |
+%          |                                         |
+%          v                                         v
+%  ------------------------                    #######################
+% | Does your abbreviation |        Yes       # Use \newabbrvexplicit #
+% | contain any lower-case |     --------->   #                       #
+% | letters?               |         ^         #######################
+%  ------------------------          |               ^
+%          |                  [Consider using]       |
+%          | No               [ \formatabbrv ]       | No
+%          v                                         |
+%  ------------------------                   -----------------------
+% | Does you abbreviation  |        Yes      | Should all numbers be |
+% | contain any numbers?   |     --------->  | regular (e.g. L2CAP)? |
+%  ------------------------                   -----------------------
+%          |                                         |
+%          | No                                      |
+%          |                                         |
+%          v                                         |
+%  ------------------------                          v
+% | Does you abbreviation  |        Yes       ######################       
+% | contain any non-letter |     -------->   # Use \newabbrvspecial #
+% | characters?            |                 #                      # 
+%  ------------------------                   ######################
+%          |
+%          | No
+%          |
+%          v
+%  ###############
+% # Use \newabbrv #
+% #               #
+%  ###############
+
+
+% \newabbrv{MOA}{My Own Abbreviation}     
+% \newabbrvspecial{S/S-A}{Smart/Special-Abbreviation}{SSA}
+% \newabbrvexplicit{\textsc{i}$^2$\textsc{c}}{Inter-Integrated Circuit}{ITWOC}{I2C}
+%
+%
+% The first alternative is for simple abbreviations only containing capital letters. The abbreviation first, then the definition.
+% The second alternative is intended for abbreviations with some special characters in it (/ - . = + etc.). The abbreviation first, the definition second and the 'name' of the abbreviation third (use the name in the macros explained below)
+% The third one is a last option if you need numbers (regular or sub/superscript) or lower case letters (or just want a special formatting of an abbreviation). In the first two alternatives, the abbreviation will be formatted for you in a consistent manner, but for this command you'll input the exact formatting yourself as first argument. Second is the definition, third is the 'name' of the abbreviation, and the fourth is what to use for sorting (observe that upper case letters are always considered before lower case ones, so upper case letters should almost always be used here).
+%
+% For abbreviations only containing letters, regular numbers and special characters, but the letters are both lower and upper case, there is a short form for formatting them in accordance with the others:
+%
+% \newabbrvexplicit{\formatabbrv{dB}}{Decibel}{dB}{DB}
+%
+%
+%
+% After declaration of e.g. MOA, there are some commands available:
+%
+% \MOA       - Inputs the formatted abbreviation
+% \MOAdef    - Inputs the unformatted definition text
+% \MOAsdef   - Input the definition text in lower case letters
+% 
+% Observe that the first use of a definition input will make the definition emphazised.
+% If this is not wanted, use \skipdeffirst{MOA} before the usage.
+%
+%
+%
+% Sometimes you'd like suffixes on the abbreviations, then you can use empty grouping: \MOA{}s
+%
+% Note that you can use abbreviation macros inside other abbreviations definitions, as long as the abbreviation inside the definition is declared before using the outer abbreviation definition. I.e. the following is allowed:
+%
+% \newabbrvspecial{CSI-RS}{\CSI Reference Signal}{CSIRS}
+% \CSIRS means
+% \newabbrv{CSI}{Channel State Information}
+% \CSIRSdef
+%
+% Which would output (with formatting): CSI-RS means CSI Reference Signal
+%
+%
+%
+%
+% You can also make a list of abbreviations, to be used in tabular environments with two columns (such as the notationtabular environment in the class rtthesis):
+%
+%   \listofabbrv
+%   \listofabbrvn{5}{17}
+%
+% The first line will input all abbreviations THAT ARE USED, and their definitions, in alphabetic order. While the second line will input abbreviations number 5-17 (inclusive) with their definitions. 
+% The second command is useful if you have many abbreviations and need to split them in several tabular environments.
+% If you supply a number larger than the amount of abbreviations to \listabbrvn, the maximum will be used.
+%
+% OBS: This works just like a table of contents, i.e. in one comiplation it writes all used abbreviations to a file (.abb), and in a following compilation the list can be input from this file. Thus you will need at least two compilations for the list to match your document.
+%
+% OBS2: Since this only lists abbreviations actually used, you could declare all abbreviations you could think of without risking any screw-ups (i.e. listing unused abbreviations). Furthermore, by always using this package for abbreviations, you will also make sure that all abbreviations are listed, thus you won't make any mistakes regarding abbreviations!
+%
+% OBS3: If you use an abbreviation inside a definition as in the CSI-RS example above, then the CSI-abbreviation has to be declared before making this list, since the macro is used in it.
+%
+% A nice little feature if you'd like some statistics and data on your abbreviation usage is that you can call \enableAbbrvCount or \disableAbbrvCount before making the list, to get numbers in the right margin telling how many times each abbreviation and definition has been used. Even more, you can also call \enableAbbrvCountVerbose to also get the page numbers (with hyperreferencing) of the first usage of the abbreviation and the definition. Default is that all these features are disabled.
+% 
+%
+%
+%
+% Current format of abbreviations and definitions:
+%
+% - Abbreviations in the text are formatted as lower case in the small caps font (\textsc{\MakeLowercase{...}})
+% - Abbreviations in the abbreviation list uses the same formatting as in the text.
+% - Definitions are used without any further formatting in the abbreviation list.
+% - Definitions in the text are emphazised the first time they are used, but not in the future. 
+% - The regular definition macro (\...def) does not change the definition from the input, bt (\...sdef) changes everything to lower case
+% - You cannot use abbreviations and definitions (as macros) in headings or labels (why would you even want that?), but they can be used in all captions with some care: For normal captions you write yourself it works like a charm (\caption{\MOA}), but for a higher level command you might need to add something (\incfig[filename = moa, caption = {\noexpand\MOA}, label = moa])
+%
+%
+% 
+%
+% Advanced:
+%
+% - You can change the formatting of abbreviations easily by changing the definition of \textabbr on the third line after this small guide.
+% - If you do this and are using \formatabbrv, then you should also alter the definition of \f@rm@tl@@p on the seventh line: The operation inbetween "=`#1" and "\else" is how uppercase letters are formatted, and the operation between "\else" and "\fi" is how everything else is formatted. The argument #1 will be one character at a time.
+% 
+% - You can also change the formatting of the first use of a definition by changing \defabbr on the fourth line. For instance, if you do not want any special formatting of the first definition use, change to \def\defabbr#1{#1}
+%
+% - If you are using skipdeffirst for some definition and are checking your statistics, then the definition count will be one larger than the actual usage.
+
+
+
+
+% These format the regular abbreviations and definitions
+\def\textabbr#1{\textsc{\MakeLowercase{#1}}}
+\def\defabbr#1{\emph{#1}}
+
+
+% ----- Start of abbreviation "code" -----
+
+\makeatletter
+\newcounter{abbrv@count}
+
+% This loop is used by \formatabbrv to create different formats for upper case and lower case letters
+\def\f@rm@tl@@p#1#2#{%
+\ifnum\uccode`#1=`#1\textabbr{#1}\else{\small #1}\fi%
+\ifx\relax#2\else%
+\f@rm@tl@@p#2{}%
+\fi%
+}
+
+\def\formatabbrv #1{%
+\f@rm@tl@@p#1\relax{}%
+}
+
+\def\n@page{unused}
+
+
+
+% Macro that creates the abbreviation definition
+% First argument: The macro name
+% Second argument: The definition
+\newcommand{\newabbrv@def}[2]{%
+\expandafter\newcount\csname #1def@count\endcsname
+\expandafter\global\csname #1def@count\endcsname 0\relax
+\expandafter\xdef\csname #1def@page\endcsname{\n@page}
+\expandafter\def\csname #1def\endcsname{%
+\expandafter\ifnum\csname #1def@count\endcsname = 0
+\defabbr{#2}\else #2\fi\expandafter\ifx\csname #1def@page\endcsname\n@page\expandafter\xdef\csname #1def@page\endcsname{\thepage}\label{@bbrvdef:#1}\else\fi\global\expandafter\advance\csname #1def@count\endcsname 1\xspace
+}
+\expandafter\def\csname #1sdef\endcsname{%
+\expandafter\ifnum\csname #1def@count\endcsname = 0
+\defabbr{\MakeLowercase{#2}}\else \MakeLowercase{#2}\fi\expandafter\ifx\csname #1def@page\endcsname\n@page\expandafter\xdef\csname #1def@page\endcsname{\thepage}\label{@bbrvdef:#1}\else\fi\global\expandafter\advance\csname #1def@count\endcsname 1\xspace
+}
+}
+
+
+% Macro that creates the abbreviation
+% First argument: The formatted abbreviation
+% Second argument: The macro name
+\newcommand{\new@abbrv}[2]{%
+\expandafter\newcount\csname #2@count\endcsname
+\expandafter\global\csname #2@count\endcsname 0\relax
+\expandafter\xdef\csname #2@page\endcsname{\n@page}
+\expandafter\def\csname #2\endcsname{%
+#1\expandafter\ifx\csname #2@page\endcsname\n@page\expandafter\xdef\csname #2@page\endcsname{\thepage}\label{@bbrv:#2}\else\fi\global\expandafter\advance\csname #2@count\endcsname 1\xspace}
+}
+
+
+% Arrays to store the abbreviations
+\newownarray{@bbrvs} % The alphabetic names
+\newownarray{@bbrms} % The macros
+\newownarray{@bbrds} % The definitions
+\newownarray{@bbrns} % The abbreviation 'names'
+\newownarray{@bbrls} % A line that is written to file
+
+
+% Macro that takes the last element of the arrays and bubbles it up according to alphabetic ordering
+\def\bubble@up{%
+\newcount\j
+\j \value{abbrv@count}\relax
+\advance\j -1\relax
+\multido{\i=\value{abbrv@count}+-1}{\j}{%
+\ifnum\pdf@strcmp{\@bbrvsget{\i}}{\@bbrvsget{\j}} <0
+\@bbrvsswitch{\i}{\j}
+\@bbrmsswitch{\i}{\j}
+\@bbrdsswitch{\i}{\j}
+\@bbrnsswitch{\i}{\j}
+\@bbrlsswitch{\i}{\j}
+\else
+\multidostop
+\fi
+\advance\j -1\relax
+}
+}
+
+
+% Converts space-separated content to \string
+\def\t@string #1 #2{%
+\string#1\space%
+\ifx\relax#2\else%
+\t@string #2%
+\fi%
+}
+
+% Used to write {, } and % to file
+\begingroup
+\catcode`<=1 \catcode`>=2 
+\catcode`{=12 \catcode`}=12 \catcode`\%=12
+\gdef\wbgroup<{>
+\gdef\wegroup<}>
+\gdef\wpgroup<%>
+\endgroup
+
+
+% High-level macro that creates everything with the abbreviation
+% First argument:  The formatted abbreviation
+% Second argument: The definition
+% Third argument:  The macro name
+% Fourth argument: The alphabetic name
+\newcommand{\create@abbrv}[4]{%
+\stepcounter{abbrv@count}
+\@bbrvsset{\value{abbrv@count}}{#4}
+\@bbrnsset{\value{abbrv@count}}{#3}
+\@bbrlsset{\value{abbrv@count}}{\string#1 \wegroup\wbgroup\t@string #2 \relax}
+\@bbrdsset{\value{abbrv@count}}{#2}
+\new@abbrv{#1}{#3}
+\newabbrv@def{#3}{#2}
+\@bbrmsset{\value{abbrv@count}}{\csname #3\endcsname{}}
+\bubble@up
+}
+
+
+
+% The three visible commands to create abbreviations
+\newcommand{\newabbrv}[2]{%
+\create@abbrv{\textabbr{#1}}{#2}{#1}{#1}
+}
+\newcommand{\newabbrvspecial}[3]{%
+\create@abbrv{\textabbr{#1}}{#2}{#3}{#1}
+}
+\newcommand{\newabbrvexplicit}[4]{%
+\create@abbrv{#1}{#2}{#3}{#4}
+}
+
+
+% Command to skip first definition formatting, easy 'hack' that makes for incorrect statistics
+\newcommand{\skipdeffirst}[1]{%
+\global\csname #1def@count\endcsname 1\relax
+}
+
+
+% Arrays to hold all information that is read from file
+\newownarray{@bbrvcoli}
+\newownarray{@bbrvcolii}
+\newownarray{@bbrvcoliii}
+\newownarray{@bbrvcoliv}
+\newownarray{@bbrvcolv}
+\newownarray{@bbrvcolvi}
+\newownarray{@bbrvcolvii}
+\newcounter{line@count}
+\newif\ifextra@bbrvinf@
+\newif\ifextra@bbrvinf@verb@se
+\extra@bbrvinf@false
+\extra@bbrvinf@verb@sefalse
+
+
+% Commands that alter the functionality of listing abbreviations
+\newcommand{\enableAbbrvCount}{\extra@bbrvinf@true\extra@bbrvinf@verb@sefalse}
+\newcommand{\enableAbbrvCountVerbose}{\extra@bbrvinf@true\extra@bbrvinf@verb@setrue}
+\newcommand{\disableAbbrvCount}{\extra@bbrvinf@false\extra@bbrvinfo@verb@sefalse}
+
+
+
+% Macro that lists all read abbreviations in two columns: abbreviation & definition
+% The definition column might also contain some right adjusted statistics depending on ifs
+\newcommand{\listofabbrv}{%
+\let\listabbrv\empty
+\begingroup
+\let\@bbrvcoliget\relax
+\let\@bbrvcoliiget\relax
+\let\@bbrvcoliiiget\relax
+\let\@bbrvcolivget\relax
+\let\@bbrvcolvget\relax
+\let\@bbrvcolviget\relax
+\let\@bbrvcolviiget\relax
+\let\hyperref\relax
+\let\hfill\relax
+\let\\\relax
+\multido{\iAbbrv=1+1}{\value{line@count}}{%
+\xdef\listabbrv{\listabbrv
+\@bbrvcoliget{\iAbbrv} & \@bbrvcoliiget{\iAbbrv} \ifextra@bbrvinf@\hfill \@bbrvcoliiiget{\iAbbrv}\ifextra@bbrvinf@verb@se(\hyperref[@bbrv:\@bbrvcolviiget{\iAbbrv}]{p.~\@bbrvcolvget{\iAbbrv}})\else\fi, \@bbrvcolivget{\iAbbrv}\ifextra@bbrvinf@verb@se(\hyperref[@bbrvdef:\@bbrvcolviiget{\iAbbrv}]{p.~\@bbrvcolviget{\iAbbrv}})\else\fi\else\fi\\}}
+\endgroup
+\listabbrv
+}
+
+% Macro that lists a subset of all read abbreviations in two columns: abbreviation & definition
+% The definition column might also contain some right adjusted statistics depending on ifs
+\newcounter{reps@@}
+\newcommand{\listofabbrvn}[2]{%
+\let\listabbrv\empty
+\begingroup
+\let\@bbrvcoliget\relax
+\let\@bbrvcoliiget\relax
+\let\@bbrvcoliiiget\relax
+\let\@bbrvcolivget\relax
+\let\@bbrvcolvget\relax
+\let\@bbrvcolviget\relax
+\let\@bbrvcolviiget\relax
+\let\hyperref\relax
+\let\hfill\relax
+\let\\\relax
+\ifnum\value{line@count}>#2 \setcounter{reps@@}{#2}\else\setcounter{reps@@}{\value{line@count}}\fi
+\addtocounter{reps@@}{-#1}
+\addtocounter{reps@@}{1}
+\multido{\iAbbrv=#1+1}{\value{reps@@}}{%
+\xdef\listabbrv{\listabbrv
+\@bbrvcoliget{\iAbbrv} & \@bbrvcoliiget{\iAbbrv} \ifextra@bbrvinf@\hfill \@bbrvcoliiiget{\iAbbrv}\ifextra@bbrvinf@verb@se(\hyperref[@bbrv:\@bbrvcolviiget{\iAbbrv}]{p.~\@bbrvcolvget{\iAbbrv}})\else\fi, \@bbrvcolivget{\iAbbrv}\ifextra@bbrvinf@verb@se(\hyperref[@bbrvdef:\@bbrvcolviiget{\iAbbrv}]{p.~\@bbrvcolviget{\iAbbrv}})\else\fi\else\fi\\}}
+\endgroup
+\listabbrv}
+
+
+
+% This command should only be called from an .abb-file if you do not know what you're doing!
+\newcommand{\createabbrvline}[7]{%
+\stepcounter{line@count}
+\@bbrvcoliset{\value{line@count}}{#1}
+\@bbrvcoliiset{\value{line@count}}{#2}
+\@bbrvcoliiiset{\value{line@count}}{#3}
+\@bbrvcolivset{\value{line@count}}{#4}
+\@bbrvcolvset{\value{line@count}}{#5}
+\@bbrvcolviset{\value{line@count}}{#6}
+\@bbrvcolviiset{\value{line@count}}{#7}
+}
+
+\newwrite\abbrv@out
+
+
+% Execute the .abb-file at the start of the document to set up for \listabbrv and \listabbrvn
+\AtBeginDocument{%
+\IfFileExists{\jobname.abb}{\begingroup\edef\x{\endgroup\noexpand\input{\jobname.abb}}\x}{}
+\ifnum\value{line@count}=0 \stepcounter{line@count}\@bbrvcoliset{1}{EMPTY}\@bbrvcoliiset{1}{No abbreviations exists}\@bbrvcoliiiset{1}{0}\@bbrvcolivset{1}{0}\@bbrvcolvset{1}{\n@page}\@bbrvcolviset{1}{\n@page}\@bbrvcolviiset{1}{}\else\fi
+}
+
+
+% At the end of the document, all used abbreviations are written to the .abb-file, together with some statistics (and some nice comments)
+\AtEndDocument{%
+\immediate\openout\abbrv@out=\jobname.abb
+\immediate\write\abbrv@out{\wpgroup\space If you're for some reason reading this file you'll maybe wonder about the structure of it.}
+\immediate\write\abbrv@out{\wpgroup\space  As you see, all used (and only those used) abbreviations are listed alphabetically here in some strange format.}
+\immediate\write\abbrv@out{\wpgroup\space  Actually, at the position of \string\begin{document} of a compilation, this file is input like any other tex file and the macro \string\createabbrvline{}{}{}{}{}{}{} is used for each abbreviation.}
+\immediate\write\abbrv@out{\wpgroup\space  The seven arguments are as follows:}
+\immediate\write\abbrv@out{\wpgroup\space  1: The formatting of the abbreviation, what is actually put into the document when the abbreviation macro is used.}
+\immediate\write\abbrv@out{\wpgroup\space  2: The unformatted definition of the abbreviation.}
+\immediate\write\abbrv@out{\wpgroup\space  3: The amount of times the abbreviation was used.}
+\immediate\write\abbrv@out{\wpgroup\space  4: The amount of times the definition was used (plus one if \string\skipdeffirst{} was also used).}
+\immediate\write\abbrv@out{\wpgroup\space  5: The page number where the abbreviation was first used.}
+\immediate\write\abbrv@out{\wpgroup\space  6: The page number where the definition was first used.}
+\immediate\write\abbrv@out{\wpgroup\space  7: The 'name' of the abbreviation, i.e. the combination of letters you use to input the abbreviation.}
+\immediate\write\abbrv@out{\wpgroup\space The macro stores all data in the order of the calls, and when \string\listabbrv\space is used each data entry will create one line in the list.}
+\multido{\i=1+1}{\value{abbrv@count}}{%
+\expandafter\ifnum\csname \@bbrnsget{\i}@count\endcsname > 0
+\immediate\write\abbrv@out{\string\createabbrvline{\@bbrlsget{\i}}\wbgroup\expandafter\the\csname \@bbrnsget{\i}@count\endcsname\wegroup\wbgroup\expandafter\the\csname \@bbrnsget{\i}def@count\endcsname\wegroup\wbgroup\csname \@bbrnsget{\i}@page\endcsname\wegroup\wbgroup\csname \@bbrnsget{\i}def@page\endcsname\wegroup\wbgroup\@bbrnsget{\i}\wegroup}
+\else\fi
+}
+\immediate\closeout\abbrv@out
+}
+
+
+\makeatother
+
+% ----- End of abbreviation "code" -----
+
+
+
+
+
+
+
+
+
+
+
+%***********************************************************
+%         Compact labelling of chapters/sections etc.      * 
+%***********************************************************
+
+% Use \Chapter{name}[label], \Section{name}[label] and \Subsection{name}[label] for sectioning, label is optional, the name will be used if empty.
+
+\newcommand\storearg{}
+
+\newcommand\Chapter[1]{\renewcommand\storearg{#1}\Chapterprox}
+\newcommand\Chapterprox[1][\storearg]{\chapter{\storearg} \label{cha:#1}}
+\newcommand\Section[1]{\renewcommand\storearg{#1}\Sectionprox}
+\newcommand\Sectionprox[1][\storearg]{\section{\storearg} \label{sec:#1}}
+\newcommand\Subsection[1]{\renewcommand\storearg{#1}\Subsectionprox}
+\newcommand\Subsectionprox[1][\storearg]{\subsection{\storearg} \label{sec:#1}}
+
+
+
+
+
+
+
+
+
+
+
+
+%***********************************************************
+%                          Referencing                     *
+%***********************************************************
+
+% Automatic referencing of different objects in the document. Use macros with small letter inside a sentence and macros with large letter at the start of a sentence:
+%
+%  \Sectionref{Introduction} talked about what \sectionref{Result} would show...
+%
+% would produce "Section 1.1 talked about what section 5.1 would show..." with the proper hyperreferencing.
+%
+% 
+%
+% Make sure that all labels start with the correct prefixes:
+%
+% chapter:    cha
+% section:    sec
+% subsection: sec
+% figure:     fig
+% table:      tab
+% equation:   eq
+% theorem:    the
+% example:    ex
+
+\newcommand{\chapterref}[1]{\hyperref[cha:#1]{Chapter~\ref*{cha:#1}}}
+\newcommand{\Chapterref}[1]{\hyperref[cha:#1]{Chapter~\ref*{cha:#1}}}
+
+\newcommand{\sectionref}[1]{\hyperref[sec:#1]{Section~\ref*{sec:#1}}}
+\newcommand{\Sectionref}[1]{\hyperref[sec:#1]{Section~\ref*{sec:#1}}}
+
+\newcommand{\sectionstoref}[2]{Sections \hyperref[sec:#1]{\ref*{sec:#1}}~to~\hyperref[sec:#2]{\ref*{sec:#2}}}
+\newcommand{\Sectionstoref}[2]{Sections \hyperref[sec:#1]{\ref*{sec:#1}}~to~\hyperref[sec:#2]{\ref*{sec:#2}}}
+
+\newcommand{\sectionsreftwo}[2]{Section \hyperref[sec:#1]{\ref*{sec:#1}}~and~\hyperref[sec:#2]{\ref*{sec:#2}}}
+\newcommand{\Sectionsreftwo}[2]{Section \hyperref[sec:#1]{\ref*{sec:#1}}~and~\hyperref[sec:#2]{\ref*{sec:#2}}}
+
+\newcommand{\sectionsrefthree}[3]{Sections \hyperref[sec:#1]{\ref*{sec:#1}},~\hyperref[sec:#2]{\ref*{sec:#2}} and~\hyperref[sec:#3]{\ref*{sec:#3}}}
+\newcommand{\Sectionsrefthree}[3]{Sections \hyperref[sec:#1]{\ref*{sec:#1}},~\hyperref[sec:#2]{\ref*{sec:#2}} and~\hyperref[sec:#3]{\ref*{sec:#3}}}
+
+\newcommand{\theoremref}[1]{\hyperref[the:#1]{theorem~\ref*{the:#1}}}
+\newcommand{\Theoremref}[1]{\hyperref[the:#1]{Theorem~\ref*{the:#1}}}
+
+\newcommand{\exampleref}[1]{\hyperref[ex:#1]{example~\ref*{ex:#1}}}
+\newcommand{\Exampleref}[1]{\hyperref[ex:#1]{Example~\ref*{ex:#1}}}
+
+\newcommand{\equationref}[1]{\hyperref[eq:#1]{equation~\eqref{eq:#1}}}
+\newcommand{\Equationref}[1]{\hyperref[eq:#1]{Equation~\eqref{eq:#1}}}
+
+\newcommand{\figureref}[1]{\hyperref[fig:#1]{Figure~\ref*{fig:#1}}}
+\newcommand{\Figureref}[1]{\hyperref[fig:#1]{Figure~\ref*{fig:#1}}}
+
+\newcommand{\tableref}[1]{\hyperref[tab:#1]{Table~\ref*{tab:#1}}}
+\newcommand{\Tableref}[1]{\hyperref[tab:#1]{Table~\ref*{tab:#1}}}
+
+\newcommand{\pagepageref}[1]{\hyperref[#1]{page~\pageref*{#1}}}
+
+
+
+
+
+
+
+
+
+
+%***********************************************************
+%                      Easy figure input                   *
+%***********************************************************
+
+% Example usage for figures (graphics):
+%\incfig[filename = my_fig,
+%		 caption  = {This is my figure!},
+%		 label    = myfig,
+%		 options  = {keepaspectratio=false, width=15cm, height=2cm},
+%		 position = !htbp]
+%
+%
+%
+% Example usage for figures (tikz drawings):
+%\incdraw[filename = my_draw,
+%		 caption  = {This is my drawing!},
+%		 label    = mydraw,
+%		 options  = {keepaspectratio=false, width=15cm, height=2cm},
+%		 position = !htbp]
+%
+% Example drawing, file fig/my_draw.tex:
+%
+%   \begin{tikzpicture}
+%      \draw (0,0) -- (1,0) ellipse (0.4,0.8);
+%   \end{tikzpicture}
+
+
+
+\pgfkeys{
+ /incfig/.is family, /incfig,
+ % Here are the options that a user can pass
+ default/.style = 
+  {caption = {NO CAPTION!!!}, position = tbp, 
+  label = fig:\arabic{figure}, options = {width=8cm},
+  filename = nofig},
+ caption/.estore in = \incfigCaption,
+ position/.estore in = \incfigPosition,
+ label/.estore in = \incfigLabel,
+ filename/.estore in = \incfigFilename,
+ options/.estore in = \incfigOptions,
+}
+
+
+\makeatletter
+\ifblack@ndwhite
+\def\figpath{figbw/}
+\PassOptionsToPackage{monochrome}{xcolor}
+\else
+\def\figpath{fig/}
+\fi
+
+\newcommand{\ifcolorelse}[2]{%
+\ifblack@ndwhite #2\else #1\fi}
+\makeatother
+
+\newcommand\incfig[1][]{%
+ \addtocounter{figure}{1} 
+ \pgfkeys{/incfig, default, #1}%
+ \addtocounter{figure}{-1}
+\edef\efigure{\noexpand\begin{figure}[\incfigPosition]}%
+\efigure
+\centering
+\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptions]{\figpath\incfigFilename}}\x
+\caption{\incfigCaption}
+\label{fig:\incfigLabel}
+\end{figure}
+}
+
+\newcommand\incdraw[1][]{%
+ \addtocounter{figure}{1} 
+ \pgfkeys{/incfig, default, #1}%
+ \addtocounter{figure}{-1}
+\edef\efigure{\noexpand\begin{figure}[\incfigPosition]}%
+\efigure
+\centering
+\begingroup\edef\x{\endgroup\noexpand\input{\figpath\incfigFilename}}\x
+\caption{\incfigCaption}
+\label{fig:\incfigLabel}
+\end{figure}
+}
+
+
+
+\endinput
