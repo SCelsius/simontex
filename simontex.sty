@@ -155,6 +155,20 @@
 % \incdraw[filename = •, caption = •, label = •, options = {•}, position = •] - Includes tex-file as figure, from
 %                                                                               directory fig/ if color and from
 %                                                                               figbw/ otherwise
+% \incfigtwo[caption = •, label = •, position = •,
+%            filename1 = •, caption1 = •, label1 = •, options1 = {•}, 
+%            filename2 = •, caption2 = •, label2 = •, options2 = {•}]         - Includes two figures side by side, 
+%                                                                               in the same fashion as \incfig
+% \incfigfour[caption = •, label = •, position = •,
+%             filename1 = •, caption1 = •, label1 = •, options1 = {•}, 
+%             filename2 = •, caption2 = •, label2 = •, options2 = {•},          
+%             filename3 = •, caption3 = •, label3 = •, options3 = {•},            
+%             filename4 = •, caption4 = •, label4 = •, options4 = {•}]        - Includes four figures in a box,
+%                                                                               in the same fashion as \incfig
+%
+%    --- In the above commands, all key-value pairs are optional 
+%        (although not all combinations produce output that makes sense)
+                                                                 
 
 
 
@@ -342,38 +356,43 @@
 
 % This part of the package makes it quite easy to handle abbreviations in your thesis.
 % Whenever you are about to use a new abbreviation, declare it with one of the following:
+%
+% \newabbrv{MOA}{My Own Abbreviation}     
+% \newabbrvspecial{S/S-A}{Smart/Special-Abbreviation}{SSA}
+% \newabbrvexplicit{\textsc{i}$^2$\textsc{c}}{Inter-Integrated Circuit}{ITWOC}{I2C}
+%
 
 % Guide for choosing abbreviation declaring command:
 %
-%  ------------------------                    
+% ,------------------------.                  
 % | Do you want a special  |        Yes       
 % | self-defined format?   |     --------------------.  
-%  ------------------------                          |
+% `------------------------´                         |
 %          |                                         |
 %          | No                                      |
 %          |                                         |
 %          v                                         v
-%  ------------------------                    #######################
+% ,------------------------.                   #######################
 % | Does your abbreviation |        Yes       # Use \newabbrvexplicit #
 % | contain any lower-case |     --------->   #                       #
 % | letters?               |         ^         #######################
-%  ------------------------          |               ^
+% `------------------------´         |               ^
 %          |                  [Consider using]       |
 %          | No               [ \formatabbrv ]       | No
 %          v                                         |
-%  ------------------------                   -----------------------
+% ,------------------------.                 ,-----------------------.
 % | Does you abbreviation  |        Yes      | Should all numbers be |
 % | contain any numbers?   |     --------->  | regular (e.g. L2CAP)? |
-%  ------------------------                   -----------------------
+% `------------------------´                 `-----------------------´
 %          |                                         |
 %          | No                                      |
 %          |                                         |
 %          v                                         |
-%  ------------------------                          v
+% ,------------------------.                         v
 % | Does you abbreviation  |        Yes       ######################       
 % | contain any non-letter |     -------->   # Use \newabbrvspecial #
 % | characters?            |                 #                      # 
-%  ------------------------                   ######################
+% `------------------------´                  ######################
 %          |
 %          | No
 %          |
@@ -384,16 +403,14 @@
 %  ###############
 
 
-% \newabbrv{MOA}{My Own Abbreviation}     
-% \newabbrvspecial{S/S-A}{Smart/Special-Abbreviation}{SSA}
-% \newabbrvexplicit{\textsc{i}$^2$\textsc{c}}{Inter-Integrated Circuit}{ITWOC}{I2C}
+
 %
 %
 % The first alternative is for simple abbreviations only containing capital letters. The abbreviation first, then the definition.
 % The second alternative is intended for abbreviations with some special characters in it (/ - . = + etc.). The abbreviation first, the definition second and the 'name' of the abbreviation third (use the name in the macros explained below)
 % The third one is a last option if you need numbers (regular or sub/superscript) or lower case letters (or just want a special formatting of an abbreviation). In the first two alternatives, the abbreviation will be formatted for you in a consistent manner, but for this command you'll input the exact formatting yourself as first argument. Second is the definition, third is the 'name' of the abbreviation, and the fourth is what to use for sorting (observe that upper case letters are always considered before lower case ones, so upper case letters should almost always be used here).
 %
-% For abbreviations only containing letters, regular numbers and special characters, but the letters are both lower and upper case, there is a short form for formatting them in accordance with the others:
+% For abbreviations only containing letters, regular numbers and special characters, but the letters are both lower and upper case, there is a short form for formatting them in accordance with the others, for instance:
 %
 % \newabbrvexplicit{\formatabbrv{dB}}{Decibel}{dB}{DB}
 %
@@ -752,6 +769,8 @@
 \newcommand\Sectionprox[1][\storearg]{\section{\storearg} \label{sec:#1}}
 \newcommand\Subsection[1]{\renewcommand\storearg{#1}\Subsectionprox}
 \newcommand\Subsectionprox[1][\storearg]{\subsection{\storearg} \label{sec:#1}}
+\newcommand\Subsubsection[1]{\renewcommand\storearg{#1}\Subsubsectionprox}
+\newcommand\Subsubsectionprox[1][\storearg]{\subsubsection{\storearg} \label{sec:#1}}
 
 
 
@@ -870,6 +889,62 @@
  options/.estore in = \incfigOptions,
 }
 
+\pgfkeys{
+ /incfig2/.is family, /incfig2,
+ % Here are the options that a user can pass
+ default/.style = 
+  {caption = {NO CAPTION!!!}, position = tbp, label = fig:\arabic{figure},
+  label1 = fig:\arabic{figure}:a, options1 = {width=4cm},
+  filename1 = nofig, caption1 = {},
+  label2 = fig:\arabic{figure}:b, options2 = {width=4cm},
+  filename2 = nofig, caption2 = {},},
+ caption/.estore in = \incfigCaption,
+ position/.estore in = \incfigPosition,
+ label/.estore in = \incfigLabel,
+ label1/.estore in = \incfigLabeli,
+ caption1/.estore in = \incfigCaptioni,
+ filename1/.estore in = \incfigFilenamei,
+ options1/.estore in = \incfigOptionsi,
+ label2/.estore in = \incfigLabelii,
+ caption2/.estore in = \incfigCaptionii,
+ filename2/.estore in = \incfigFilenameii,
+ options2/.estore in = \incfigOptionsii,
+}
+
+\pgfkeys{
+ /incfig4/.is family, /incfig4,
+ % Here are the options that a user can pass
+ default/.style = 
+  {caption = {NO CAPTION!!!}, position = tbp, label = fig:\arabic{figure},
+  label1 = fig:\arabic{figure}:a, options1 = {width=4cm},
+  filename1 = nofig, caption1 = {},
+  label2 = fig:\arabic{figure}:b, options2 = {width=4cm},
+  filename2 = nofig, caption2 = {},
+  label3 = fig:\arabic{figure}:c, options3 = {width=4cm},
+  filename3 = nofig, caption3 = {},
+  label4 = fig:\arabic{figure}:d, options4 = {width=4cm},
+  filename4 = nofig, caption4 = {},},
+ caption/.estore in = \incfigCaption,
+ position/.estore in = \incfigPosition,
+ label/.estore in = \incfigLabel,
+ label1/.estore in = \incfigLabeli,
+ caption1/.estore in = \incfigCaptioni,
+ filename1/.estore in = \incfigFilenamei,
+ options1/.estore in = \incfigOptionsi,
+ label2/.estore in = \incfigLabelii,
+ caption2/.estore in = \incfigCaptionii,
+ filename2/.estore in = \incfigFilenameii,
+ options2/.estore in = \incfigOptionsii,
+ label3/.estore in = \incfigLabeliii,
+ caption3/.estore in = \incfigCaptioniii,
+ filename3/.estore in = \incfigFilenameiii,
+ options3/.estore in = \incfigOptionsiii,
+ label4/.estore in = \incfigLabeliv,
+ caption4/.estore in = \incfigCaptioniv,
+ filename4/.estore in = \incfigFilenameiv,
+ options4/.estore in = \incfigOptionsiv,
+}
+
 
 \makeatletter
 \ifblack@ndwhite
@@ -895,6 +970,39 @@
 \label{fig:\incfigLabel}
 \end{figure}
 }
+
+\newcommand\incfigtwo[1][]{%
+ \addtocounter{figure}{1} 
+ \pgfkeys{/incfig2, default, #1}%
+ \addtocounter{figure}{-1}
+\edef\efigure{\noexpand\begin{figure}[\incfigPosition]}%
+\efigure
+\centering
+\subfloat[][\label{fig:\incfigLabeli}\incfigCaptioni]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsi]{\figpath\incfigFilenamei}}\x}
+\qquad
+\subfloat[][\label{fig:\incfigLabelii}\incfigCaptionii]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsii]{\figpath\incfigFilenameii}}\x}
+\caption{\label{fig:\incfigLabel}\incfigCaption}
+\end{figure}
+}
+
+\newcommand\incfigfour[1][]{%
+ \addtocounter{figure}{1} 
+ \pgfkeys{/incfig4, default, #1}%
+ \addtocounter{figure}{-1}
+\edef\efigure{\noexpand\begin{figure}[\incfigPosition]}%
+\efigure
+\centering
+\subfloat[][\label{fig:\incfigLabeli}\incfigCaptioni]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsi]{\figpath\incfigFilenamei}}\x}
+\qquad
+\subfloat[][\label{fig:\incfigLabelii}\incfigCaptionii]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsii]{\figpath\incfigFilenameii}}\x}
+\\
+\subfloat[][\label{fig:\incfigLabeliii}\incfigCaptioniii]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsiii]{\figpath\incfigFilenameiii}}\x}
+\qquad
+\subfloat[][\label{fig:\incfigLabeliv}\incfigCaptioniv]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsiv]{\figpath\incfigFilenameiv}}\x}
+\caption{\label{fig:\incfigLabel}\incfigCaption}
+\end{figure}
+}
+
 
 \newcommand\incdraw[1][]{%
  \addtocounter{figure}{1} 
