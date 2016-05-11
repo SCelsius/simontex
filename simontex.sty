@@ -893,7 +893,8 @@
  /incfig2/.is family, /incfig2,
  % Here are the options that a user can pass
  default/.style = 
-  {caption = {NO CAPTION!!!}, position = tbp, label = fig:\arabic{figure},
+  {caption = {NO CAPTION!!!}, position = tbp, 
+  label = fig:\arabic{figure}, hspace = \qquad,
   label1 = fig:\arabic{figure}:a, options1 = {width=4cm},
   filename1 = nofig, caption1 = {},
   label2 = fig:\arabic{figure}:b, options2 = {width=4cm},
@@ -901,6 +902,7 @@
  caption/.estore in = \incfigCaption,
  position/.estore in = \incfigPosition,
  label/.estore in = \incfigLabel,
+ hspace/.estore in = \incfigHspace,
  label1/.estore in = \incfigLabeli,
  caption1/.estore in = \incfigCaptioni,
  filename1/.estore in = \incfigFilenamei,
@@ -915,7 +917,8 @@
  /incfig4/.is family, /incfig4,
  % Here are the options that a user can pass
  default/.style = 
-  {caption = {NO CAPTION!!!}, position = tbp, label = fig:\arabic{figure},
+  {caption = {NO CAPTION!!!}, position = tbp, 
+  label = fig:\arabic{figure}, hspace = \qquad,
   label1 = fig:\arabic{figure}:a, options1 = {width=4cm},
   filename1 = nofig, caption1 = {},
   label2 = fig:\arabic{figure}:b, options2 = {width=4cm},
@@ -927,6 +930,7 @@
  caption/.estore in = \incfigCaption,
  position/.estore in = \incfigPosition,
  label/.estore in = \incfigLabel,
+ hspace/.estore in = \incfigHspace,
  label1/.estore in = \incfigLabeli,
  caption1/.estore in = \incfigCaptioni,
  filename1/.estore in = \incfigFilenamei,
@@ -979,7 +983,7 @@
 \efigure
 \centering
 \subfloat[][\label{fig:\incfigLabeli}\incfigCaptioni]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsi]{\figpath\incfigFilenamei}}\x}
-\qquad
+\incfigHspace
 \subfloat[][\label{fig:\incfigLabelii}\incfigCaptionii]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsii]{\figpath\incfigFilenameii}}\x}
 \caption{\label{fig:\incfigLabel}\incfigCaption}
 \end{figure}
@@ -993,11 +997,11 @@
 \efigure
 \centering
 \subfloat[][\label{fig:\incfigLabeli}\incfigCaptioni]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsi]{\figpath\incfigFilenamei}}\x}
-\qquad
+\incfigHspace
 \subfloat[][\label{fig:\incfigLabelii}\incfigCaptionii]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsii]{\figpath\incfigFilenameii}}\x}
 \\
 \subfloat[][\label{fig:\incfigLabeliii}\incfigCaptioniii]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsiii]{\figpath\incfigFilenameiii}}\x}
-\qquad
+\incfigHspace
 \subfloat[][\label{fig:\incfigLabeliv}\incfigCaptioniv]{\begingroup\edef\x{\endgroup\noexpand\includegraphics[\incfigOptionsiv]{\figpath\incfigFilenameiv}}\x}
 \caption{\label{fig:\incfigLabel}\incfigCaption}
 \end{figure}
