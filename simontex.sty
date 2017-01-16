@@ -47,8 +47,7 @@
 % \matr              - Format matrix
 % \Ex                - The expectation operator
 % \Va                - The variance operator
-% \Tcp               - Short for mathematical T_{cp} (cyclic prefix time) (use anywhere)
-% \Expec{arg}        - Formatted expectiation of 'arg' (use anywhere)
+% \Expec{arg}        - Formatted expectation of 'arg' (use anywhere)
 % \Var{arg}          - Formatted variance of 'arg' (use anywhere)
 % \Abs{arg}          - Formatted absolute value of 'arg' (use anywhere)
 % \Norm{arg}         - Formatted norm of 'arg' (use anywhere)
@@ -252,7 +251,6 @@
 \newcommand{\Va}{\operatorname{\mathbf{Var}}}
 
 % Commonly used notations
-\newcommand{\Tcp}{\ensuremath{T_\text{CP}}\xspace}
 \newcommand{\Expec}[1]{\ensuremath{\Ex\left\{ #1 \right\}}}
 \newcommand{\Var}[1]{\ensuremath{\Va\left\{ #1 \right\}}}
 \newcommand{\Abs}[1]{\ensuremath{\left| #1 \right|}}
@@ -361,8 +359,19 @@
 % \newabbrvspecial{S/S-A}{Smart/Special-Abbreviation}{SSA}
 % \newabbrvexplicit{\textsc{i}$^2$\textsc{c}}{Inter-Integrated Circuit}{ITWOC}{I2C}
 %
+%
+%
+% The first alternative is for simple abbreviations only containing capital letters. The abbreviation first, then the definition.
+% The second alternative is intended for abbreviations with some special characters in it (/ - . = + etc.). The abbreviation first, the definition second and the 'name' of the abbreviation third (use the name in the macros explained below)
+% The third one is a last option if you need numbers (regular or sub/superscript) or lower case letters (or just want a special formatting of an abbreviation). In the first two alternatives, the abbreviation will be formatted for you in a consistent manner, but for this command you'll input the exact formatting yourself as first argument. Second is the definition, third is the 'name' of the abbreviation, and the fourth is what to use for sorting (observe that upper case letters are always considered before lower case ones, so upper case letters should almost always be used here).
+%
+% For abbreviations only containing letters, regular numbers and special characters, but the letters are both lower and upper case, there is a short form for formatting them in accordance with the others, for instance:
+%
+% \newabbrvexplicit{\formatabbrv{dB}}{Decibel}{dB}{DB}
 
-% Guide for choosing abbreviation declaring command:
+
+
+% Please advise this guide for choosing abbreviation declaring command if you are unsure:
 %
 % ,------------------------.                  
 % | Do you want a special  |        Yes       
@@ -379,14 +388,14 @@
 % `------------------------´         |               ^
 %          |                  [Consider using]       |
 %          | No               [ \formatabbrv ]       | No
-%          v                                         |
+%          v                  [ on first arg ]       |
 % ,------------------------.                 ,-----------------------.
 % | Does you abbreviation  |        Yes      | Should all numbers be |
 % | contain any numbers?   |     --------->  | regular (e.g. L2CAP)? |
 % `------------------------´                 `-----------------------´
 %          |                                         |
 %          | No                                      |
-%          |                                         |
+%          |                                         | Yes
 %          v                                         |
 % ,------------------------.                         v
 % | Does you abbreviation  |        Yes       ######################       
@@ -403,19 +412,6 @@
 %  ###############
 
 
-
-%
-%
-% The first alternative is for simple abbreviations only containing capital letters. The abbreviation first, then the definition.
-% The second alternative is intended for abbreviations with some special characters in it (/ - . = + etc.). The abbreviation first, the definition second and the 'name' of the abbreviation third (use the name in the macros explained below)
-% The third one is a last option if you need numbers (regular or sub/superscript) or lower case letters (or just want a special formatting of an abbreviation). In the first two alternatives, the abbreviation will be formatted for you in a consistent manner, but for this command you'll input the exact formatting yourself as first argument. Second is the definition, third is the 'name' of the abbreviation, and the fourth is what to use for sorting (observe that upper case letters are always considered before lower case ones, so upper case letters should almost always be used here).
-%
-% For abbreviations only containing letters, regular numbers and special characters, but the letters are both lower and upper case, there is a short form for formatting them in accordance with the others, for instance:
-%
-% \newabbrvexplicit{\formatabbrv{dB}}{Decibel}{dB}{DB}
-%
-%
-%
 % After declaration of e.g. MOA, there are some commands available:
 %
 % \MOA       - Inputs the formatted abbreviation
@@ -446,11 +442,11 @@
 %   \listofabbrv
 %   \listofabbrvn{5}{17}
 %
-% The first line will input all abbreviations THAT ARE USED, and their definitions, in alphabetic order. While the second line will input abbreviations number 5-17 (inclusive) with their definitions. 
+% The first line will input all abbreviations THAT ARE USED in your document, and their definitions, in alphabetic order. While the second line will input abbreviations number 5-17 (inclusive) with their definitions. 
 % The second command is useful if you have many abbreviations and need to split them in several tabular environments.
-% If you supply a number larger than the amount of abbreviations to \listabbrvn, the maximum will be used.
+% If you supply a number larger than the amount of abbreviations to \listabbrvn, the maximum number available will be used.
 %
-% OBS: This works just like a table of contents, i.e. in one comiplation it writes all used abbreviations to a file (.abb), and in a following compilation the list can be input from this file. Thus you will need at least two compilations for the list to match your document.
+% OBS: This works just like a table of contents, i.e. in one compilation it writes all used abbreviations to a file (.abb), and in a following compilation the list can be input from this file. Thus you will need at least two compilations for the list to match your document.
 %
 % OBS2: Since this only lists abbreviations actually used, you could declare all abbreviations you could think of without risking any screw-ups (i.e. listing unused abbreviations). Furthermore, by always using this package for abbreviations, you will also make sure that all abbreviations are listed, thus you won't make any mistakes regarding abbreviations!
 %
@@ -812,8 +808,8 @@
 \newcommand{\sectionref}[1]{\hyperref[sec:#1]{Section~\ref*{sec:#1}}}
 \newcommand{\Sectionref}[1]{\hyperref[sec:#1]{Section~\ref*{sec:#1}}}
 
-\newcommand{\sectionstoref}[2]{Sections \hyperref[sec:#1]{\ref*{sec:#1}}~to~\hyperref[sec:#2]{\ref*{sec:#2}}}
-\newcommand{\Sectionstoref}[2]{Sections \hyperref[sec:#1]{\ref*{sec:#1}}~to~\hyperref[sec:#2]{\ref*{sec:#2}}}
+\newcommand{\sectionstoref}[2]{Section \hyperref[sec:#1]{\ref*{sec:#1}}~to \hyperref[sec:#2]{\ref*{sec:#2}}}
+\newcommand{\Sectionstoref}[2]{Section \hyperref[sec:#1]{\ref*{sec:#1}}~to \hyperref[sec:#2]{\ref*{sec:#2}}}
 
 \newcommand{\sectionsreftwo}[2]{Section \hyperref[sec:#1]{\ref*{sec:#1}}~and~\hyperref[sec:#2]{\ref*{sec:#2}}}
 \newcommand{\Sectionsreftwo}[2]{Section \hyperref[sec:#1]{\ref*{sec:#1}}~and~\hyperref[sec:#2]{\ref*{sec:#2}}}
